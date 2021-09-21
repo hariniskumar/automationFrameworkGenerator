@@ -1,0 +1,27 @@
+	//${elementName} methods
+	 
+	public By get${elementNameCapitalized}Locator() {
+		return ${elementName}Locator;
+	}
+	
+	public WebElement get${elementNameCapitalized}(int stackIndex) {		
+		if (getDriver().findElements(${elementName}Locator).isEmpty()) {
+			throw new NoSuchElementException("findElements() method for the element $elementname returned an empty list");
+		} else {
+			return getDriver().findElements(${elementName}Locator).get(stackIndex);
+		}
+	}
+	
+	public void select${elementNameCapitalized}(int stackIndex, String s) {		
+		//TODO		
+	}
+
+	public void select${elementNameCapitalized}(int stackIndex, int elementIndex) {		
+		//TODO		
+	}
+	
+	
+	public String getSelected${elementNameCapitalized}(int stackIndex) {		
+		//TODO
+		return null;				
+	}

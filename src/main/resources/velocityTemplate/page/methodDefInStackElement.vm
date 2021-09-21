@@ -1,0 +1,24 @@
+	//${elementName} methods
+	
+	public By get${elementNameCapitalized}Locator() {
+		return ${elementName}Locator;
+	}
+	
+	public WebElement get${elementNameCapitalized}(int stackIndex) {
+		if (getDriver().findElements(${elementName}Locator).isEmpty()) {
+			throw new NoSuchElementException("findElements() method for the element $elementname returned an empty list");
+		} else {
+			return getDriver().findElements(${elementName}Locator).get(stackIndex);
+		}
+	}
+
+	public void goTo${elementNameCapitalized}(int stackIndex) {
+		Actions actions = new Actions(getDriver());
+		actions.moveToElement(get${elementNameCapitalized}(stackIndex)).build().perform();					
+	}
+	
+	public void click${elementNameCapitalized}(int stackIndex) {
+		get${elementNameCapitalized}(stackIndex).click();
+		//Alternative 1:  new Actions(getDriver()).moveToElement(get${elementNameCapitalized}(stackIndex)).click().build().perform();
+		//Alternative 2:  ((JavascriptExecutor)getDriver()).executeScript("arguments[0].click()", get${elementNameCapitalized}(stackIndex));						
+	}

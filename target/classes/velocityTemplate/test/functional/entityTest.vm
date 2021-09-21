@@ -1,0 +1,3 @@
+@Test(dataProvider = "${entity}DataProvider")
+	public void ${entity}Test(Map<String, String> ${entity}) {
+	}

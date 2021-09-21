@@ -1,0 +1,21 @@
+	//${elementName} methods
+	
+	public By get${elementNameCapitalized}Locator() {
+		return ${elementName}Locator;
+	}
+	
+	public WebElement get${elementNameCapitalized}() {
+		click${elementDependsOnCapitalized}();
+		return getDriver().findElement(${elementName}Locator);
+	}
+
+	public void goTo${elementNameCapitalized}() {
+		Actions actions = new Actions(getDriver());
+		actions.moveToElement(get${elementNameCapitalized}()).build().perform();;						
+	}
+	
+	public void click${elementNameCapitalized}() {
+		get${elementNameCapitalized}().click();
+		//Alternative 1:  new Actions(getDriver()).moveToElement(get${elementNameCapitalized}()).click().build().perform();
+		//Alternative 2:  ((JavascriptExecutor)getDriver()).executeScript("arguments[0].click()", get${elementNameCapitalized}());						
+	}

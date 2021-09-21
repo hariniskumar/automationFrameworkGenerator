@@ -1,0 +1,71 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>automationFrameworkGenerator</groupId>
+	<artifactId>automationFrameworkGenerator</artifactId>
+	<version>0.0.1-SNAPSHT</version>
+	<name>Automation Framework Generator</name>
+	<description>UI Automation Test Framework Generator</description>
+
+	<dependencies>
+		<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>4.1.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.6</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+		<plugins>
+			<!-- Configure Maven to use java 1.8 -->
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- bundles all jars into lib folder into the executable jar file -->
+			<plugin>
+				<groupId>de.ntcomputer</groupId>
+				<artifactId>executable-packer-maven-plugin</artifactId>
+				<version>1.0.1</version>
+				<configuration>
+					<mainClass>afg.AutomationFrameworkGenerator</mainClass>
+					<!-- <mainClass>afg.PomCodeSnippetGenerator</mainClass> -->
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>pack-executable-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>3.2.4</version> <executions> <execution> <phase>package</phase> 
+				<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
+				implementation="PageObjectModelCodeGenerator"> <mainClass>org.sonatype.haven.HavenCli</mainClass> 
+				</transformer> </transformers> </configuration> </execution> </executions> 
+				</plugin> -->
+		</plugins>
+	</build>
+</project>

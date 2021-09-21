@@ -1,0 +1,3 @@
+	public ${className}(WebDriver driver) {
+		super(driver);
+	}

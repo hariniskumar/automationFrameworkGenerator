@@ -1,0 +1,24 @@
+	//${elementName} methods
+	 
+	public By get${elementNameCapitalized}Locator() {
+		return ${elementName}Locator;
+	}
+	
+	public WebElement get${elementNameCapitalized}() {
+		goTo${elementDependsOnCapitalized}();
+		return getDriver().findElement(${elementName}Locator);		
+	}
+	
+	public void select${elementNameCapitalized}(String s) {		
+		//TODO		
+	}
+
+	public void select${elementNameCapitalized}(int index) {		
+		//TODO		
+	}
+	
+	
+	public String getSelected${elementNameCapitalized}() {		
+		//TODO
+		return null;				
+	}

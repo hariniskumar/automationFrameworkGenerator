@@ -1,0 +1,31 @@
+baseUrl=${baseUrl}
+
+# webDriverRepositoryPath is the full path of the base directory where various webdrivers are stored
+# default value is <projectDirPath>/webdriver/
+# webDriverRepositoryPath  = <projectDirPath>/webdriver/
+
+# chromeDriverPath is relative to webDriverRepositoryPath
+chromeDriverPath=chrome/93.0.4577.63/win32/chromedriver.exe
+
+# firefoxDriverPath is relative to webDriverRepositoryPath 
+firefoxDriverPath=mozilla/0.23.0/win64/geckodriver.exe
+
+# ieDriverPath is relative to webDriverRepositoryPath
+ieDriverPath=ie/3.14.0/win32/IEDriverServer.exe
+
+# edgeDriverPath is relative to webDriverRepositoryPath
+edgeDriverPath=
+
+
+pageLoadTimeOutSec=30
+explicitWaitMilliSec=100
+implicitWaitMilliSec=500
+
+enableScreenshot=true
+testDataExcelFile=$testDataFileName
+
+#create an user on cogmento.com and add those details below.
+default.username=harini.kumar.email@gmail.com
+default.password=BlahBlahBlah0
+default.user.firstName=Harini
+default.user.lastName=Kumar

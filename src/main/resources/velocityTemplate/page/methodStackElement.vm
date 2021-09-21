@@ -1,0 +1,13 @@
+	//${elementName} methods
+	 
+	public By get${elementNameCapitalized}Locator() {
+		return ${elementName}Locator;
+	}
+	
+	public WebElement get${elementNameCapitalized}() {
+		return getDriver().findElement(${elementName}Locator);
+	}
+	
+	public int stackSizeOf${elementNameCapitalized}() {
+		return getDriver().findElements(${elementName}Locator).size();
+	}

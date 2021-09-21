@@ -1,0 +1,5 @@
+@AfterMethod(alwaysRun = true)
+	public void teardown() {
+		//BrowserUtil.sleep(5000);
+		driver.quit();
+	}
