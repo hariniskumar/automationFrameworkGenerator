@@ -1,6 +1,6 @@
 package ${page.pageValidatorPackageName};
 
-import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.By;
@@ -11,7 +11,7 @@ import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import ${page.packageName}.${page.pageName};
-import com.cogmento.automation.web.tool.BrowserUtil;
+import ${basePackageName}.tool.BrowserUtil;
 
 public class ${page.PageValidatorName}{
 

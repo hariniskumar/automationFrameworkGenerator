@@ -25,4 +25,12 @@ public class ElementTypes {
 	// Text Element that is associated with FileUpload and needs to have TODO to
 	// alert the developer
 	public static final String txtFileUpload = "txtFileUpload";
+	
+	//more added
+	public static final String tagsTxt = "tagsTxt";
+	public static final String tagsSingleSelList = "tagsSingleSelList";
+	public static final String tagsTxtInStack = "tagsTxtInStack";
+	public static final String tagsSingleSelListInStack = "tagsSingleSelListInStack";
+	
+	
 }

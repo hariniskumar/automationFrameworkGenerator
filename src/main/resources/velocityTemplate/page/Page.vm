@@ -1,0 +1,79 @@
+package $packageName;
+
+import ${parentPackageName}.${parentClassName};
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.NoSuchElementException;
+
+
+public class $className extends $parentClassName {
+	
+		#foreach($element in $elements)
+			//Element:$element.elementName   Type:$element.elementType
+			#if($element.defElementType)
+				//$element Type:$element.elementType
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);
+			#end
+
+			#if($element.lblElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);
+			#end
+
+			#if($element.txtElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);
+			#end
+
+			#if($element.singleSelListElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);				
+			#end
+
+			#if($element.stackElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);			
+			#end
+
+			#if($element.txtInStackElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}(0);
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);
+			#end
+
+			#if($element.singleSelListInStackElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}(0);
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);				
+			#end
+
+			#if($element.defInStackElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}(0);
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);				
+			#end
+
+			#if($element.txtFileUploadElementType)
+				locator = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}Locator();
+				element = ${page.pageNameBeginLowerCase}.get${element.elementNameCapitalized}();
+				isElementPDE = ${page.pageNameBeginLowerCase}.isElementPresentDisplayedAndEnabled(locator, element);
+				assertTrue(isElementPDE);
+			#end
+			
+		#end

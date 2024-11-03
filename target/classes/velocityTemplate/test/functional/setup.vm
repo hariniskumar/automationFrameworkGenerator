@@ -1,8 +1,0 @@
-	@BeforeMethod
-	@Parameters({ "browser", "baseUrl" })
-	public void setup(String browser, String baseUrl) {
-		System.out.println(baseUrl);
-		driver = BrowserUtil.getWebDriver(browser);
-		driver.get(baseUrl);
-		HomePage homePage = new HomePage(driver);
-	}

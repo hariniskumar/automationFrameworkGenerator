@@ -1,4 +1,0 @@
-	@DataProvider
-	public Object[][] ${entity}DataProvider() {
-		return ExcelUtil.getTestDataMaps("${entity}");
-	}

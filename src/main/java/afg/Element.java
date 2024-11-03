@@ -1,6 +1,5 @@
 package afg;
 
-
 import org.apache.commons.lang.StringUtils;
 
 public class Element {
@@ -10,6 +9,7 @@ public class Element {
 	private String desiredActionForElementDependsOn;
 	private String elementLocatorType;
 	private String elementLocatorValue;
+	private String elementComment;
 
 	public String getElementName() {
 		return elementName;
@@ -59,6 +59,14 @@ public class Element {
 		this.elementLocatorValue = elementLocatorValue;
 	}
 
+	public String getElementComment() {
+		return elementComment;
+	}
+
+	public void setElementComment(String elementComment) {
+		this.elementComment = elementComment;
+	}
+
 	public String getElementNameCapitalized() {
 		return StringUtils.capitalize(elementName);
 	}
@@ -106,7 +114,23 @@ public class Element {
 	public boolean isTxtFileUploadElementType() {
 		return getElementType().equalsIgnoreCase(ElementTypes.txtFileUpload);
 	}
-	
+
+	public boolean isTagsTxtElementType() {
+		return getElementType().equalsIgnoreCase(ElementTypes.tagsTxt);
+	}
+
+	public boolean isTagsTxtInStackElementType() {
+		return getElementType().equalsIgnoreCase(ElementTypes.tagsTxtInStack);
+	}
+
+	public boolean isTagsSingleSelListElementType() {
+		return getElementType().equalsIgnoreCase(ElementTypes.tagsSingleSelList);
+	}
+
+	public boolean isTagsSingleSelListInStackElementType() {
+		return getElementType().equalsIgnoreCase(ElementTypes.tagsSingleSelListInStack);
+	}
+
 	public String toString() {
 		String s = "[" + elementName + "," + elementType + "," + elementDependsOn + "," + elementLocatorType + "," + elementLocatorValue + "]";
 		return s;

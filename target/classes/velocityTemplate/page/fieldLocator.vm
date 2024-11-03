@@ -1,2 +1,0 @@
-	private By ${elementName}Locator = By.${elementLocatorType}("$elementLocatorValue");
-

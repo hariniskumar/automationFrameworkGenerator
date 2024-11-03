@@ -5,114 +5,98 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelUtil {
-	public static String podExcelFilePath;
+	public static String excelFilePath;
 	static Workbook workbook;
 	static Sheet sheet;
 
 	public static void init(String filePath) {
-		podExcelFilePath = filePath;
+		excelFilePath = filePath;
 	}
-
-	public static List<String> getSheetNames() {
-		List<String> sheetNames = new ArrayList<String>();
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-			sheetNames.add(workbook.getSheetName(i));
-		}
-		return sheetNames;
-	}
-
-	public static List<String> getEntitySheetNames() {
-		List<String> sheetNames = new ArrayList<String>();
-		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-			if (!workbook.getSheetName(i).startsWith("POD")) {
-				sheetNames.add(workbook.getSheetName(i));
+	
+	public static Object[][] getStringDataMatrix(String sheetName) {
+		Sheet sheet = getSheet(sheetName);
+		Object[][] data = new Object[sheet.getLastRowNum()][sheet.getRow(0).getLastCellNum()];
+		for (int i = 0; i < sheet.getLastRowNum(); i++) {
+			for (int k = 0; k < sheet.getRow(0).getLastCellNum(); k++) {
+				data[i][k] = sheet.getRow(i + 1).getCell(k).toString();
 			}
-
 		}
-		return sheetNames;
+		return data;
 	}
 
-	public static Properties getElementTypeDefinition() {
-		Properties glossary = new Properties();
-		sheet = getSheet("POD-Element Types");
-		int rowNum = 0;
-		String name = null;
-		String value = null;
-		Row row;
-		while (rowNum <= sheet.getLastRowNum()) {
-			row = sheet.getRow(rowNum);
-			if (row.getCell(0) != null) {
-				name = row.getCell(0).getStringCellValue();
-				value = row.getCell(1).getStringCellValue();
-				glossary.put(name, value);
-			}
-			rowNum++;
-		}
-		return glossary;
-	}
-
-	public static List<String> getPageDetails(int columnNumber) {
-		sheet = getSheet("POD");
-		List<String> pageDetails = new ArrayList<String>();
-		int rowNum = 0;
-		Row row;
-		Cell cell;
-		while (rowNum <= sheet.getLastRowNum()) {
-			row = sheet.getRow(rowNum);
-			cell = row.getCell(columnNumber);
-			if (cell == null) {
-				if (rowNum == 0) {
-					break;// no more pages, return emply list
+	public static Object[][] get2DimArrayWith1stColNullAnd2ndColStringDataMap(String sheetName) {
+		Sheet sheet = getSheet(sheetName);
+		Object[][] data = new Object[sheet.getLastRowNum()][1];
+		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+			Map<String, String> datamap = new HashMap<String, String>();
+			for (int k = 0; k < sheet.getRow(0).getLastCellNum(); k++) {
+				Object headerCell = null;
+				Object cell = null;
+				String key = null;
+				String value = null;
+				if ((headerCell = sheet.getRow(0).getCell(k)) != null) {
+					key = headerCell.toString();
+					if ((cell = sheet.getRow(i).getCell(k)) != null) {
+						value = cell.toString();
+					} else {
+						value = "";
+					}
+					datamap.put(key, value); // put only when key is not null
 				}
-				pageDetails.add(null);
-			} else {
-				pageDetails.add(cell.getStringCellValue());
+
 			}
-			rowNum++;
+			data[i - 1][0] = datamap;
 		}
-		int removeFromIndex = 0;
-		// cleanup list, there are hundreds of null elements after the last
-		// element
-		for (int index = 3; index < pageDetails.size(); index = index + 5) {
-			String elementName = pageDetails.get(index);
-			String elementType = pageDetails.get(index + 1);
-			String elementDependsOn = pageDetails.get(index + 2);
-			String elementLocatoryType = pageDetails.get(index + 3);
-			String elementLocatorValue = pageDetails.get(index + 4);
-			if (elementName == null && elementType == null && elementDependsOn == null && elementLocatoryType == null
-					&& elementLocatorValue == null) {
-				removeFromIndex = index;
-				while (removeFromIndex < pageDetails.size()) {
-					pageDetails.remove(removeFromIndex);
-				}
-				break;
-			}
-		}
-		return pageDetails;
+		return data;
 	}
 
-	private static Sheet getSheet(String sheetName) {
+	public static List<Map<String, String>> getListOfDataMaps(String sheetName) {
+		Sheet sheet = getSheet(sheetName);
+		ArrayList<Map<String, String>> listOfDataMaps = new ArrayList<>();
+		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+			Map<String, String> datamap = new HashMap<String, String>();
+			for (int k = 0; k < sheet.getRow(0).getLastCellNum(); k++) {
+				Cell headerCell = null;
+				Cell cell = null;
+				String key = null;
+				String value = null;
+				if ((headerCell = sheet.getRow(0).getCell(k)) != null) {
+					key = headerCell.toString();
+					if ((cell = sheet.getRow(i).getCell(k)) != null) {
+						//value = cell.toString();
+						value = cell.getStringCellValue();
+					} else {
+						value = "";
+					}
+					datamap.put(key, value); // put only when key is not null
+				}
+			}
+			listOfDataMaps.add(datamap);
+		}
+		return listOfDataMaps;
+	}
+
+	static Sheet getSheet(String sheetName) {
 		Sheet sheet;
 		InputStream is = null;
 		try {
 			try {
-				is = new FileInputStream(podExcelFilePath);
+				is = new FileInputStream(excelFilePath);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			if (new File(podExcelFilePath).getName().toLowerCase().endsWith("xlsx")) {
+			if (new File(excelFilePath).getName().toLowerCase().endsWith("xlsx")) {
 				workbook = new XSSFWorkbook(is);
 			} else {
 				workbook = new HSSFWorkbook(is);
@@ -123,22 +107,17 @@ public class ExcelUtil {
 		sheet = workbook.getSheet(sheetName);
 		return sheet;
 	}
+	
+	public static List<String> getSheetNames() {
+		List<String> sheetNames = new ArrayList<String>();
+		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+			sheetNames.add(workbook.getSheetName(i));
+		}
+		return sheetNames;
+	}
 
 	public static void main(String[] args) {
-		System.out.println("Enter the name of the podfile relative to the current directory.");
-		Scanner scanner = new Scanner(System.in);
-		String podFileRelativePath = scanner.nextLine();
-		scanner.close();
-		podExcelFilePath = System.getProperty("user.dir") + "/" + podFileRelativePath;
-		sheet = getSheet("pod");
-		int colNum = 1;
-		List<String> pageDetails = null;
-		while (true) {
-			pageDetails = getPageDetails(colNum);
-			if (pageDetails.isEmpty())
-				break;
-			System.out.println(pageDetails.toString());
-			colNum++;
-		}
+		Object[][] data = get2DimArrayWith1stColNullAnd2ndColStringDataMap("Companies");
+		data[0][0].toString();
 	}
 }

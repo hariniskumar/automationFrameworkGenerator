@@ -5,7 +5,7 @@ baseUrl=${baseUrl}
 # webDriverRepositoryPath  = <projectDirPath>/webdriver/
 
 # chromeDriverPath is relative to webDriverRepositoryPath
-chromeDriverPath=chrome/93.0.4577.63/win32/chromedriver.exe
+chromeDriverPath=chrome/95.0.4638.69/win32/chromedriver.exe
 
 # firefoxDriverPath is relative to webDriverRepositoryPath 
 firefoxDriverPath=mozilla/0.23.0/win64/geckodriver.exe

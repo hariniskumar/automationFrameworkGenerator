@@ -1,3 +1,0 @@
-	//TODO: populate the locator ${elementName}Locator using appropriate findBy method.
-	private By ${elementName}Locator = null; 
-

@@ -1,6 +1,5 @@
 package afg;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,17 +108,18 @@ public class Page {
 	}
 
 	public String getPageValidatorPackageName() {
-		return getPackageName().replace("page.", "test.pageValidation.");
+		return getPackageName().replace("page", "test.pageValidation");
 	}
 
 	public String getPageValidatorPath() {
 		return projectPath + mavenPath + getPageValidatorPackageName().replace(".", "/") + "/" + getPageValidatorName() + ".java";
 	}
 
-	//other methods
+	// other methods
 	public boolean isGenericPage() {
 		return getPageName().equalsIgnoreCase("GenericPage");
 	}
+
 	public String toString() {
 		String s = pageName + "\n" + getPackageName() + "\n" + parentPageName + "\n" + parentPackageName + "\n";
 		for (Element e : getElements()) {

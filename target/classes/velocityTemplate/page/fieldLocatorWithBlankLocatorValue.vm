@@ -1,3 +1,0 @@
-	// TODO: enter the ${elementLocatorType} value for ${elementName}Locator 
-	private By ${elementName}Locator = By.$elementLocatorType("");
-

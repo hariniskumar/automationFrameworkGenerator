@@ -1,6 +1,5 @@
 package afg;
 
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.velocity.Template;
@@ -28,8 +28,10 @@ public class AutomationFrameworkGenerator {
 	static VelocityEngine velocityEngine;
 	static String podExcelFilePath;
 	static Properties elementTypeDefitions;
-	static List<Page> pages = new ArrayList<Page>();
+	static List<Page> pages = new ArrayList<Page>();// used by old pod
 	static Map<String, String> pageName2PackageNameMap = new HashMap<String, String>();
+	// podv2
+	static Map<String, Page> fullyQualifiedPageName2PageMap = new TreeMap<>();
 
 	static {
 		velocityEngine = new VelocityEngine();
@@ -63,8 +65,8 @@ public class AutomationFrameworkGenerator {
 			basePackageName = scanner.nextLine();
 			scanner.close();
 		}
-		ExcelUtil.init(System.getProperty("user.dir") + "/" + podFileRelativePath);
-		elementTypeDefitions = ExcelUtil.getElementTypeDefinition();
+		ExcelUtilForAFG.init(System.getProperty("user.dir") + "/" + podFileRelativePath);
+		elementTypeDefitions = ExcelUtilForAFG.getElementTypeDefinition();
 		// Runtime.getRuntime().exec("cmd /c start somefile.bat");
 		// Runtime.getRuntime().exec("cmd /c \"start somefile.bat && start other.bat && cd C:\\test && test.exe\"");
 		generateMavenPomFile();
@@ -74,13 +76,24 @@ public class AutomationFrameworkGenerator {
 		generateTools();
 		generateWebDrivers();
 		generateScreenshotFolder();
-		processPod();
-		fixMissingLinks();
-		for (Page page : pages) {
+//		processPod();		
+//		fixMissingLinks();
+//
+//		for (Page page : pages) {
+//			generatePageClass(page);
+//			generatePageValidatorClass(page);
+//		}
+
+		processPodV2();
+		for (Page page : fullyQualifiedPageName2PageMap.values()) {
 			generatePageClass(page);
-			generatePageValidatorClass(page);			
+			generatePageValidatorClass(page);
 		}
-		generateFunctionalTestcases();
+		generateDummyModuleTestClass();
+		generateDummyE2ETestClass();
+		for (String entity : ExcelUtilForAFG.getEntitySheetNames()) {
+			generatePODEntityTestClass(entity);
+		}
 		// generate testng
 		generateTestNgFile();
 	}
@@ -260,7 +273,7 @@ public class AutomationFrameworkGenerator {
 		Page page = null;
 		List<String> pageDetails = null;
 		while (true) {
-			pageDetails = ExcelUtil.getPageDetails(colNum);
+			pageDetails = ExcelUtilForAFG.getPageDetails(colNum);
 			if (pageDetails.isEmpty()) {
 				break;
 			} else {
@@ -270,6 +283,63 @@ public class AutomationFrameworkGenerator {
 				colNum++;
 			}
 		}
+	}
+
+	private static void processPodV2() {
+
+		for (Map<String, String> dataMap : ExcelUtilForAFG.getListOfDataMaps("POD")) {
+			String pageKey = dataMap.get("base package") + "." + dataMap.get("sub-package") + "." + dataMap.get("Page");
+			Page page = fullyQualifiedPageName2PageMap.get(pageKey);
+			if (page == null) {
+				page = new Page();
+				page.setBasePackageName(dataMap.get("base package"));
+				page.setSubPackageName(dataMap.get("sub-package"));
+				if (dataMap.get("Page").equals("")) {
+					System.out.println("ERROR: PageName cannot be blank! Ignoring the row: " + dataMap.toString());
+					continue;
+				} else {
+					page.setPageName(dataMap.get("Page"));
+				}
+				page.setParentPageName(dataMap.get("Parent Page"));
+//				Page parentPage;
+//				if(pageMap.containsKey(page.getParentPageName())) {
+//					parentPage = pageMap.get(page.getParentPageName());					
+//					page.setParentPackageName(parentPage.getPackageName());
+//				}				
+				pageName2PackageNameMap.put(page.getPageName(), page.getPackageName());
+				fullyQualifiedPageName2PageMap.put(pageKey, page);
+
+			}
+			Element element = new Element();
+			if (!page.getPageName().equals("GenericPage")) {
+				if (dataMap.get("Element Name").equals("")) {
+					System.out.println("ERROR: Element Name cannot be blank! Ignoring the row: " + dataMap.toString());
+					continue;
+				} else {
+					element.setElementName(dataMap.get("Element Name"));
+					if (dataMap.get("Element Type").equals("")) {
+						element.setElementType(ElementTypes.def);
+					} else {
+						element.setElementType(dataMap.get("Element Type"));
+					}
+
+					element.setElementDependsOn(dataMap.get("Element Depends On"));
+					element.setDesiredActionForElementDependsOn(dataMap.get("Desired Action for dependency"));
+					element.setElementLocatorType(dataMap.get("Locator Type"));
+					element.setElementLocatorValue(dataMap.get("Locator Value"));
+					element.setElementComment(dataMap.get("Comments"));
+					page.getElements().add(element);
+				}
+			}
+
+		}
+
+		for (Page page : fullyQualifiedPageName2PageMap.values()) {
+			page.setParentPackageName(pageName2PackageNameMap.get(page.getParentPageName()));
+		}
+
+		System.out.println("processPodV2() complete!");
+
 	}
 
 	private static Page pageDetails2Page(List<String> pageDetails) {
@@ -315,7 +385,11 @@ public class AutomationFrameworkGenerator {
 					break;
 				case 1:
 					elementType = pageDetails.get(index);
-					element.setElementType(elementType);
+					if (elementType != null) {
+						element.setElementType(elementType);
+					} else {
+						element.setElementType(ElementTypes.def);
+					}
 					break;
 				case 2:
 					String s = pageDetails.get(index);
@@ -334,12 +408,27 @@ public class AutomationFrameworkGenerator {
 					break;
 				case 3:
 					elementLocatorType = pageDetails.get(index);
-					element.setElementLocatorType(elementLocatorType);
+					if (elementLocatorType != null) {
+						element.setElementLocatorType(elementLocatorType);
+					} else {
+						element.setElementLocatorType(LocatorTypes.xpath);
+					}
 					break;
 				case 4:
 					elementLocatorValue = pageDetails.get(index);
-					element.setElementLocatorValue(elementLocatorValue);
-					page.getElements().add(element);
+					if (elementLocatorValue != null) {
+						element.setElementLocatorValue(elementLocatorValue);
+					} else {
+						element.setElementLocatorValue("");
+					}
+
+					if (element.getElementName() != null) {
+						page.getElements().add(element);
+					} else {
+						// show error message and don't add the element without name
+						System.out.println(
+								"ERROR: Element name cannot be blank. Ignored the element. corresp Pagedetails is :" + pageDetails.toString());
+					}
 					break;
 				}
 			}
@@ -653,9 +742,7 @@ public class AutomationFrameworkGenerator {
 				pageValidatorFileWriter.write(writer.toString());
 				pageValidatorFileWriter.flush();
 
-			} catch (
-
-			IOException e) {
+			} catch (IOException e) {
 				e.printStackTrace();
 			} finally {
 				try {
@@ -667,8 +754,98 @@ public class AutomationFrameworkGenerator {
 		}
 	}
 
-	private static void generateFunctionalTestcases() {
-		// TODO Auto-generated method stub
+	private static void generateDummyModuleTestClass() {
+		FileWriter dummyModuleTestFileWriter = null;
+		System.out.println("Rendering DummyModuleTest");
+		try {
+			File dummyModuleTestFile = new File(
+					projectFullPath + "/src/test/java" + "/" + basePackageName.replace(".", "/") + "/test/module" + "/DummyModuleTest.java");
+			dummyModuleTestFile.getParentFile().mkdirs();
+			dummyModuleTestFileWriter = new FileWriter(dummyModuleTestFile);
+			VelocityContext velocityContext = new VelocityContext();
+			velocityContext.put("basePackageName", basePackageName);
+			velocityContext.put("entities", ExcelUtilForAFG.getEntitySheetNames());
+			StringWriter writer = new StringWriter();
+			Template template = velocityEngine.getTemplate("velocityTemplate/test/module/dummyModuleTest.vm");
+			template.merge(velocityContext, writer);
+			System.out.println(writer.toString());
+			System.out.println("****************************************");
+			dummyModuleTestFileWriter.write(writer.toString());
+			dummyModuleTestFileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				dummyModuleTestFileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void generateDummyE2ETestClass() {
+		FileWriter dummyE2ETestFileWriter = null;
+		System.out.println("Rendering E2ETest");
+		try {
+			File dummyE2ETestFile = new File(
+					projectFullPath + "/src/test/java" + "/" + basePackageName.replace(".", "/") + "/test/e2e" + "/E2ETest.java");
+			dummyE2ETestFile.getParentFile().mkdirs();
+			dummyE2ETestFileWriter = new FileWriter(dummyE2ETestFile);
+			VelocityContext velocityContext = new VelocityContext();
+			velocityContext.put("basePackageName", basePackageName);
+			velocityContext.put("entities", ExcelUtilForAFG.getEntitySheetNames());
+			StringWriter writer = new StringWriter();
+			Template template = velocityEngine.getTemplate("velocityTemplate/test/e2e/E2ETest.vm");
+			template.merge(velocityContext, writer);
+			System.out.println(writer.toString());
+			System.out.println("****************************************");
+			dummyE2ETestFileWriter.write(writer.toString());
+			dummyE2ETestFileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				dummyE2ETestFileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private static void generatePODEntityTestClass(String entity) {
+		FileWriter entityTestFileWriter = null;
+		System.out.println("Rendering EntityTest");
+		String entityCaps = entity.substring(0, 1).toUpperCase() + entity.substring(1);
+		String entitySmallCase = entity.substring(0, 1).toLowerCase() + entity.substring(1);
+
+		try {
+			File entityTestFile = new File(
+					projectFullPath + "/src/test/java" + "/" + basePackageName.replace(".", "/") + "/test/module/" + entityCaps + "Test.java");
+			entityTestFile.getParentFile().mkdirs();
+			entityTestFileWriter = new FileWriter(entityTestFile);
+			VelocityContext velocityContext = new VelocityContext();
+			velocityContext.put("basePackageName", basePackageName);
+
+			velocityContext.put("entity", entity);
+			velocityContext.put("entityCaps", entityCaps);
+			velocityContext.put("entitySmallCase", entitySmallCase);
+			StringWriter writer = new StringWriter();
+			Template template = velocityEngine.getTemplate("velocityTemplate/test/module/EntityTest.vm");
+			template.merge(velocityContext, writer);
+			System.out.println(writer.toString());
+			System.out.println("****************************************");
+			entityTestFileWriter.write(writer.toString());
+			entityTestFileWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				entityTestFileWriter.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private static void generateTestNgFile() {
